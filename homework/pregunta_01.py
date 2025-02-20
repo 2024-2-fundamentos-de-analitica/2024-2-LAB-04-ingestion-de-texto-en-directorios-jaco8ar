@@ -4,9 +4,34 @@
 """
 Escriba el codigo que ejecute la accion solicitada en cada pregunta.
 """
+import pandas as pd
+import os
+def leer_archivos(type_folder, feeling):
+    phrases = []
+    for _, _, files in os.walk(rf"files/input/{type_folder}/{feeling}"):
+        for file in files:
+            with open(f"files/input/{type_folder}/{feeling}/{file}") as reading_file:
+                phrases.append(reading_file.readlines()[0])
+    return phrases
+
+
+def build_df(group_type):
+    feelings = ["negative", "neutral", "positive"]
+    sentences = []
+    feelings_of_df = []
+    for feeling in feelings:
+        archivos = leer_archivos(group_type, feeling)
+        sentences.extend(archivos)
+        feelings_of_df.extend([feeling]*len(archivos))
+
+    return (sentences, feelings_of_df)
+
 
 
 def pregunta_01():
+
+
+
     """
     La información requerida para este laboratio esta almacenada en el
     archivo "files/input.zip" ubicado en la carpeta raíz.
@@ -68,6 +93,28 @@ def pregunta_01():
     |  3 | Both operating profit and net sales for the three-month period increased , respectively from EUR16 .0 m and EUR139m , as compared to the corresponding quarter in 2006 | positive |
     |  4 | Tampere Science Parks is a Finnish company that owns , leases and builds office properties and it specialises in facilities for technology-oriented businesses         | neutral  |
     ```
-
-
     """
+    sentences_test, feelings_test = build_df("test")
+
+    dict_for_df_test = {
+        "phrase": sentences_test,
+        "target": feelings_test
+    }
+    
+    test_df = pd.DataFrame(dict_for_df_test)
+
+    sentences_train, feelings_train = build_df("train")
+
+    dict_for_df_train = {
+        "phrase": sentences_train,
+        "target": feelings_train
+    }
+    
+    train_df = pd.DataFrame(dict_for_df_train)
+
+    test_df.to_csv("files/output/test_dataset.csv", index = False)
+    train_df.to_csv("files/output/train_dataset.csv", index = False)
+    
+
+
+pregunta_01()
